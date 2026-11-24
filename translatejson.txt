@@ -1,0 +1,49 @@
+{
+  "name": "Wireless Mouse",
+  "price": 29.9,
+  "tags": ["electronics", "office"],
+  "manufacturer": {
+    "brand": "Logitech",
+    "country": "Switzerland"
+  }
+}
+
+->
+export type Product = {
+  name: string;
+  price: number;
+  tags: string[];
+  manufacturer: {
+    brand: string;
+    country: string;
+  };
+};
+
+
+{
+  "total": 2,
+  "todos": [
+    { "id": 1, "task": "Buy milk", "completed": false },
+    { "id": 2, "task": "Walk dog", "completed": true }
+  ]
+}
+
+->
+1. Single item inside the array
+export type Todo = {
+  id: number;
+  task: string;
+  completed: boolean;
+};
+
+2. Outer response envelope
+export type TodoResponse = {
+  total: number;
+  todos: Todo[];
+};
+
+
+Those lines are the collection-level _links at the
+ root of the JSON response (alongside _embedded), and 
+ you can safely leave them out of CarResponse because TypeScript
+only requires you to define the properties your code actually uses.
