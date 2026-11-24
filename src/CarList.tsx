@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { DataGrid} from '@mui/x-data-grid';
 import type {GridColDef } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
+import { Box, Button,Stack, TextField } from '@mui/material';
 import type { Car } from './types';
-import { fetchCars } from './carApi';
+import { fetchCars,fetchCarById } from './carApi';
 
 //npm install @mui/x-data-grid
 //npm install @mui/icons-material
@@ -11,11 +11,24 @@ import { fetchCars } from './carApi';
 export default function CarList() {
   const [cars, setCars] = useState<Car[]>([]);
 
+  const [carId, setCarId] = useState('');
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null); //initialized to null 
+
   useEffect(() => {
     fetchCars()
       .then((data) => setCars(data._embedded.cars))
       .catch((err) => console.error(err));
   }, []);
+
+  const handleGetCar = () => {
+    if (!carId) return;
+    fetchCarById(Number(carId)) //implicit cast 
+      .then((car) => setSelectedCar(car)) 
+      .catch((err) => {
+        setSelectedCar(null);
+        console.error(err);
+      });
+  };
 
   const columns: GridColDef[] = [
     { field: 'brand', headerName: 'Brand', width: 150 },
@@ -27,13 +40,36 @@ export default function CarList() {
   ];
 
   return (
-    <Box sx={{ height: 600, width: '100%', mt: 2 }}>
-      <DataGrid
-        rows={cars}
-        columns={columns}
-        getRowId={(row) => row._links.self.href}
-      />
-    </Box>
+    <Stack spacing={2} sx={{ width: '100%', mt: 2 }}>
+      <Stack direction="row" spacing={2}>
+        <TextField
+          label="Car ID"
+          type="number"
+          size="small"
+          value={carId}
+          onChange={(e) => setCarId(e.target.value)}
+        />
+        <Button variant="contained" onClick={handleGetCar}>
+          Get Car
+        </Button>
+      </Stack>
+      {selectedCar && (
+        <p>
+          Selected car:
+           {selectedCar.brand} {selectedCar.model} 
+           ({selectedCar.modelYear}) — {selectedCar.color},
+            {selectedCar.fuel}, {selectedCar.price} €
+        </p>
+      )}
+
+      <Box sx={{ height: 600, width: '100%' }}>
+        <DataGrid
+          rows={cars}
+          columns={columns}
+          getRowId={(row) => row._links.self.href}
+        />
+      </Box>
+    </Stack>
   );
 }
 
