@@ -31,3 +31,4 @@ export type NewCar = {
   modelYear: number;
   price: number;
 };
+

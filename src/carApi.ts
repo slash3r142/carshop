@@ -36,7 +36,6 @@ export const addCar = (car: NewCar): Promise<Car> => {
         return response.json();
     })
 }
-
 /*Unlike GET requests (where fetch(url) only needs the URL),
  sending data requires a second argument—an options object with 
  three properties:
@@ -51,3 +50,32 @@ a new record rather than reading existing ones (GET).
 transmit plain text over the network, not raw JavaScript objects.
  JSON.stringify() converts the car object into a JSON string
   (for example, '{"brand":"BMW","model":"3",...}').*/
+
+  export const updateCar= (id: number, car: NewCar): Promise<Car> => {
+    return fetch(`${import.meta.env.VITE_API_URL}/cars/${id}`,{
+      method: 'PUT',
+      headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(car),
+    }).then(response => {
+      if(!response.ok){
+        throw new Error('Error: ${response.status}')
+      }
+      return response.json();
+    })
+  }
+// takes id of the car to be edited + newCar object, sends 'PUT" request and returns 
+// servers newly saved car 
+
+
+
+  export const deleteCar = (id: number): Promise<void> => {
+  return fetch(`${import.meta.env.VITE_API_URL}/cars/${id}`, {
+    method: 'DELETE',
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error(`Error : ${response.status} ${response.statusText}`);
+    }
+  }); //no return response.json() because server replies with 204 empty body (void) 
+};
